@@ -1,0 +1,34 @@
+ZC: (20220204)现在使用的方法: Win下的chrome-->F12-->网络-->停用缓存-->"√"上 --> 刷新网页后 再把"√"去掉
+ZC:	红米自带浏览器--> 设置 里面, 把 所有数据 都清除掉
+
+
+
+ZC: Gitee.Pages服务中发布的网页, 想了许多方法, 在chrome中还是一直有缓存。别的窗口打开js, 都看到内容已经变了, 但是打开的网页中还是之前缓存的内容。
+ZC: [20220102] 先用 tomcat 来调试吧 ...  不然调试起来太蛋疼了...
+
+1、
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
+    ZC: 这个方式, 貌似没有起到作用... (gitee中 Pages服务)
+
+2、
+  2.1、html 地址加上随意的随机参数, 如:
+    https://zclxy.gitee.io/webgl_learning_zz/eBook/WebGL编程指南/WebGL_Guide_Code/WebGL_Guide_Code/ch10/_1001_RotateObject.html?a=a
+  2.2、html调用 js时, 加上随机变量, 如:
+    <script src="_1001_RotateObject.js?ran=" + Math.random()></script>
+
+  ZC: 这个方式, 我试了, 貌似也不行... (gitee中 Pages服务)
+
+3、https://www.cnblogs.com/wangyongx/p/10278520.html
+  其中 的2个方式：
+	<script src="_1001_RotateObject.js?ran=" + Math.random()></script>		// 这个对于 chrome 没有作用 ...
+	<script src="_1001_RotateObject.js?ts=" + new Date().getTime()></script>	// 这个对于 chrome 却是OK的 ...
+
+	打印出 "Math.random()" 和 "new Date().getTime()" 的输出分别是: 0.3371638340173424 和 1641086538760, 难道是 小数不行 ? ? ? 整数OK ? ? ?
+
+	ZC: 该方式 最后貌似也不行...
+
+4、
+5、

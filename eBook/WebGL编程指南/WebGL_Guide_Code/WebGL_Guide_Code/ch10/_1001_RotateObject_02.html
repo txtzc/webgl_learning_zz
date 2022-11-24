@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
+    <meta charset="utf-8" />
+    <title>Rotate Object</title>
+  </head>
+
+  <body onload="main()">
+	<svg id="svgA" xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="400" height="400"
+		style="position: absolute; z-index: 100; left:0px; top:0px;">
+	  <line x1="0" y1="200" x2="400" y2="200" stroke="white" line-width="1"/>
+	  <line x1="200" y1="0" x2="200" y2="400" stroke="white" line-width="1"/>
+
+	  <text id="text00" x="200" y="212" fill="red">0,0</text>
+	  <text id="text11" x="300" y="312" fill="red">1,1</text>
+	</svg>
+
+
+    <canvas id="webgl" width="400" height="400" style="z-index: 10; position: absolute;">
+      Please use a browser that supports "canvas"
+    </canvas>
+
+
+
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix.js"></script>
+
+<!--    <script src="_1001_RotateObject.js?ran=" + Math.random()></script>-->
+	<script src="_1001_RotateObject_02.js?timestamp=" + new Date().getTime()></script>
+
+	<script type="text/javascript">
+		console.log("-->  "+Math.random());
+		console.log("==>  "+new Date().getTime());
+		console.log("");
+
+
+		var webglA = document.getElementById("webgl");
+		var rt = webglA.getBoundingClientRect();
+		console.log("rt: "+rt.left+", "+rt.top+", "+rt.right+", "+rt.bottom);
+		console.log("");
+
+		var svgA = document.getElementById("svgA");
+		svgA.style.left = rt.left+"px";
+		svgA.style.top = rt.top+"px";
+
+		var text00 = document.getElementById("text00");
+		rt = text00.getBoundingClientRect();
+		console.log("rt: "+rt.left+", "+rt.top+", "+rt.right+", "+rt.bottom + " ; "+(rt.bottom-rt.top));
+		console.log("");
+	</script>
+
+  </body>
+</html>

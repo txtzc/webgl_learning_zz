@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pick face</title>
+
+	<style type="text/css">
+		td {border:solid #000 1px; padding-left: 3px; padding-right: 3px; padding-top: 1px; padding-bottom: 1px;}
+	</style>
+  </head>
+
+  <body onload="">
+    <canvas id="webgl" width="400" height="400" style="float:left;">
+      Please use a browser that supports "canvas"
+    </canvas>
+	画线(轮廓)
+
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix.js"></script>
+    <script src="_1004_PickFace_01.js"></script>
+
+	<!--   ---   ---   ---   ---   ---   -->
+
+	<div>
+		<!-- cellspacing="3" cellpadding="0" -->
+		<table id="table1" border="2" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>g_vertices: 顶点数据(Float32数组)</td>
+				<td>g_colors: 颜色数据(Float32数组)</td>
+				<td>g_faces: 面index数据(Uint8数组)</td>
+				<td>g_indices: 顶点index数据(Uint8数组)</td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					<b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+					</b>
+				</td>
+			</tr>
+			<tr>
+				<td>数组实例名:<input type="text" value="" style="width:80px;" id="txtArrayObjectName"/></td>
+				<td>左填充字符串总长度: <input type="text" value="6" style="width:30px;" id="txtPadLength"/></td>
+				<td>1行打印几个顶点坐标: <input type="text" value="4" style="width:30px;" id="txtVerticesCountPerRow"/></td>
+				<td>每2个顶点之间, 间隔几个空格: <input type="text" value="5" style="width:30px;" id="txtSpaceCountPerVertex"/></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>保留几位小数: <input type="text" value="3" style="width:30px;" id="txtXiaoShu"/></td>
+			</tr>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;<input type="button" value="打印 数组的值" onclick="PrintArrayValue();" style="height:35px;" /></td>
+				<td colspan="5">几个浮点数为1组(顶点:x/y/z 3个float; 颜色 rgb 3个float, rgba 4个float): <input type="text" value="3" style="width:30px;" id="txtFloatCountPerGroup"/></td>
+			</tr>
+			<tr>
+				<td colspan="5"></td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					<b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+					</b>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;<input type="button" value="修改 数组数据的值" onclick="ModifyArrayValue();" style="height:35px;" /></td>
+				<td>数组元素索引: <input type="text" value="-1" style="width:30px;" id="txtArrayElementIndex"/></td>
+				<td>数组元素值: <input type="text" value="1" style="width:30px;" id="txtArrayElementValue"/></td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;&nbsp;&nbsp;<input type="button" value="重置 数组缓冲区数据" onclick="ResetBufferData();" style="height:35px;" /><br/>
+					&nbsp;&nbsp;&nbsp;<font size="1em">仅g_vertices/g_colors/g_faces</font>
+				</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					<b>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---
+					</b>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					<label><input id="cbRotateAroundXAxis" name="Fruit" type="checkbox" value="" checked/>绕X轴旋转</label>
+					<label><input id="cbRotateAroundYAxis" name="Fruit" type="checkbox" value="" />绕Y轴旋转</label>
+					<label><input id="cbRotateAroundZAxis" name="Fruit" type="checkbox" value="" />绕Z轴旋转</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					<label><input id="cbRotateAroundAxisOrderXYZ" name="RotateXYZ" type="radio" value="" checked/>绕轴旋转顺序: X->Y->Z</label>
+					<label><input id="cbRotateAroundAxisOrderXZY" name="RotateXYZ" type="radio" value="" />绕轴旋转顺序: X->Z->Y</label><br/>
+					<label><input id="cbRotateAroundAxisOrderYXZ" name="RotateXYZ" type="radio" value="" />绕轴旋转顺序: Y->X->Z</label>
+					<label><input id="cbRotateAroundAxisOrderYZX" name="RotateXYZ" type="radio" value="" />绕轴旋转顺序: Y->Z->X</label><br/>
+					<label><input id="cbRotateAroundAxisOrderZXY" name="RotateXYZ" type="radio" value="" />绕轴旋转顺序: Z->X->Y</label>
+					<label><input id="cbRotateAroundAxisOrderZYX" name="RotateXYZ" type="radio" value="" />绕轴旋转顺序: Z->Y->X</label>
+				</td>
+			</tr>
+
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+
+  </body>
+
+
+	<script type="text/javascript">
+		var g_lineWidth = 10;
+
+		var objHash = {};
+		var strHash = {};
+
+		var g_gl = null;// WebGL
+		var g_vertices = null;// 顶点坐标
+		var g_colors = null;// 顶点颜色
+		var g_faces = null;// 面index
+		var g_indices = null;// 顶点index
+
+		var g_cbRotateAroundXAxis = null;
+		var g_cbRotateAroundYAxis = null;
+		var g_cbRotateAroundZAxis = null;
+
+		window.onload = function ()
+		{
+			g_cbRotateAroundXAxis = document.getElementById("cbRotateAroundXAxis");
+			g_cbRotateAroundYAxis = document.getElementById("cbRotateAroundYAxis");
+			g_cbRotateAroundZAxis = document.getElementById("cbRotateAroundZAxis");
+
+			g_cbRotateAroundAxisOrderXYZ = document.getElementById("cbRotateAroundAxisOrderXYZ");
+			g_cbRotateAroundAxisOrderXZY = document.getElementById("cbRotateAroundAxisOrderXZY");
+			g_cbRotateAroundAxisOrderYXZ = document.getElementById("cbRotateAroundAxisOrderYXZ");
+			g_cbRotateAroundAxisOrderYZX = document.getElementById("cbRotateAroundAxisOrderYZX");
+			g_cbRotateAroundAxisOrderZXY = document.getElementById("cbRotateAroundAxisOrderZXY");
+			g_cbRotateAroundAxisOrderZYX = document.getElementById("cbRotateAroundAxisOrderZYX");
+
+
+		//   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---   ---
+			main();
+
+			objHash["g_gl"] = g_gl;
+			objHash["g_vertices"] = g_vertices;
+			objHash["g_colors"] = g_colors;
+			objHash["g_faces"] = g_faces;
+			objHash["g_indices"] = g_indices;
+
+			strHash["g_gl"] = "WebGL对象";
+			strHash["g_vertices"] = "顶点数据(Float32数组)";
+			strHash["g_colors"] = "颜色数据(Float32数组)";
+			strHash["g_faces"] = "面index数据(Uint8数组)";
+			strHash["g_indices"] = "顶点index数据(Uint8数组)";
+			
+
+			console.log(g_vertices.length);
+			//g_vertices[0] = 0;
+			console.log(g_vertices[0]);
+
+			initArrayBuffer(g_gl, g_vertices, g_gl.FLOAT, 3, 'a_Position');
+
+			
+			
+		};
+
+		function ResetBufferData()
+		{
+			txtArrayObjectName = document.getElementById("txtArrayObjectName");
+			var strArrayObjectName = txtArrayObjectName.value;
+			var arrayObj = objHash[strArrayObjectName];
+			if (arrayObj == null)
+			{
+				alert("对象不存在");
+				return;
+			}
+
+			console.log("");
+			console.log(strHash[strArrayObjectName]);
+
+			g_gl.bufferData(g_gl.ARRAY_BUFFER, arrayObj, g_gl.STATIC_DRAW);
+		}
+
+		function PrintArrayValue()
+		{
+			txtArrayObjectName = document.getElementById("txtArrayObjectName");
+			var strArrayObjectName = txtArrayObjectName.value;
+			var arrayObj = objHash[strArrayObjectName];
+			if (arrayObj == null)
+			{
+				alert("对象不存在");
+				return;
+			}
+
+			console.log("");
+			console.log(strHash[strArrayObjectName]);
+
+			PrintMsg01(arrayObj);
+		}
+
+		function ModifyArrayValue()
+		{
+			txtArrayObjectName = document.getElementById("txtArrayObjectName");
+			var strArrayObjectName = txtArrayObjectName.value;
+			var arrayObj = objHash[strArrayObjectName];
+			if (arrayObj == null)
+			{
+				alert("对象不存在");
+				return;
+			}
+
+			console.log("");
+			console.log("修改数组数据:   " + strHash[strArrayObjectName]);
+
+			ModifyMsg01(arrayObj);
+		}
+
+		function ModifyMsg01(_array)
+		{
+			var txtArrayElementIndex = document.getElementById("txtArrayElementIndex");
+			var txtArrayElementValue = document.getElementById("txtArrayElementValue");
+
+			var arrayElementIndex = parseInt(txtArrayElementIndex.value);
+			var arrayElementValue = parseFloat(txtArrayElementValue.value);
+
+			if (isNaN(arrayElementIndex) || arrayElementIndex < 0 || arrayElementIndex >= _array.length)
+			{
+				alert("数组元素index 不正确");
+				return;
+			}
+
+			if (isNaN(arrayElementValue))
+			{
+				alert("数组元素value 不是数字");
+				return;
+			}
+
+			console.log("   [" + arrayElementIndex + "] 旧值: " + _array[arrayElementIndex]);
+			console.log("   [" + arrayElementIndex + "] 新值: " + arrayElementValue);
+
+			_array[arrayElementIndex] = arrayElementValue;
+			//console.log("   [" + arrayElementIndex + "] 新值: " + txtArrayElementValue.value);
+		}
+
+		// xiaoShu: 浮点数, 保留几位小数
+		// floatCountPerGroup: 每个顶点的颜色, 由几个浮点数组成 (rbg的话是3个数, rbga的话是4个数)
+		// padLength: 字符串左填充, 目标字符串总长度
+		// verticesCountPerRow: 1行打印几个顶点坐标 (每个顶点坐标是x/y/z, 3个float数据)
+		// spaceCountPerVertex: 每2个顶点之间，间隔几个空格
+		function PrintMsg01(_array)
+		{
+			console.log("  数组元素 总个数: " + _array.length);
+			var txtXiaoShu = document.getElementById("txtXiaoShu");
+			var txtFloatCountPerGroup = document.getElementById("txtFloatCountPerGroup");
+
+			var txtPadLength = document.getElementById("txtPadLength");
+			var txtVerticesCountPerRow = document.getElementById("txtVerticesCountPerRow");
+			var txtSpaceCountPerVertex = document.getElementById("txtSpaceCountPerVertex");
+
+			var xiaoShu = parseInt(txtXiaoShu.value);
+			if (isNaN(xiaoShu) || xiaoShu < 0)
+				xiaoShu = 0;
+
+			var floatCountPerGroup = parseInt(txtFloatCountPerGroup.value);
+			if (isNaN(floatCountPerGroup) || floatCountPerGroup < 1)
+				floatCountPerGroup = 1;
+
+			var padLength = parseInt(txtPadLength.value);
+			if (isNaN(padLength) || padLength < 2)
+				padLength = 2;
+
+			var verticesCountPerRow = parseInt(txtVerticesCountPerRow.value);
+			if (isNaN(verticesCountPerRow) || verticesCountPerRow < 1)
+				verticesCountPerRow = 1;
+
+			var spaceCountPerVertex = parseInt(txtSpaceCountPerVertex.value);
+			if (isNaN(spaceCountPerVertex) || spaceCountPerVertex < 1)
+				spaceCountPerVertex = 1;
+
+			//   ---   ---   ---   ---   ---   ---
+
+			var str = "";
+			var strRow = "";
+			for (var i=0; i<_array.length; i++)
+			{
+				if (i % floatCountPerGroup == 0)// 每个顶点的颜色, 由几个浮点数组成 (rbg的话是3个数, rbga的话是4个数)
+				{
+					if (i != 0)
+					{
+						for (var j=0; j<spaceCountPerVertex; j++)// 每2个顶点之间，间隔几个空格
+							strRow += " ";
+						str += strRow;
+						strRow = "";
+					}
+				}
+
+				if (i % (floatCountPerGroup * verticesCountPerRow) == 0)
+				{
+					if (i != 0)
+						str += "\n";
+
+					var rowIndex = i / (floatCountPerGroup * verticesCountPerRow);
+					str += "行" + (""+rowIndex).padStart(3, " ") + ",[" + (""+i).padStart(3, " ") + "]:  ";
+				}
+
+				strRow += (_array[i].toFixed(xiaoShu) + "").padStart(padLength, " ");
+				strRow +=",";
+			}
+
+			str += strRow;
+			console.log(str);
+		}
+	</script>
+</html>

@@ -1,0 +1,10 @@
+1、
+F:\IDE\tomcat\apache-tomcat-10.0.14\bin
+
+2、F:\IDE\tomcat\apache-tomcat-10.0.14\conf\Catalina\localhost\webgl_learning_zz.xml
+  内容：<Context docBase="E:/Gitee/zclxy/webgl_learning_zz" />
+
+3、
+4、
+5、
+6、
